@@ -98,9 +98,9 @@ export class LineChartComponent implements OnInit{
 	}
 	private drawPath(data) {	
 		var area = d3Shape.area()
-						  .x((d: any) => this.x(d.date) )
-						  .y0(this.height)
-						  .y1((d: any) => this.y(d.value));
+					  .x((d: any) => this.x(d.date) )
+					  .y0(this.height)
+					  .y1((d: any) => this.y(d.value));
 						  
 		// add the area
 		this.svg.append("path")
@@ -119,8 +119,8 @@ export class LineChartComponent implements OnInit{
 	}
 	private drawLine(data) {	
 		this.line = d3Shape.line()
-						   .x( (d: any) => this.x(d.date))
-						   .y( (d: any) => this.y(d.value));
+					   .x( (d: any) => this.x(d.date))
+					   .y( (d: any) => this.y(d.value));
 
 		this.svg.append("path")
 				.datum(data)

@@ -100,8 +100,9 @@ export class BubbleChartComponent implements OnInit {
 	  
 	  this.percentage = (1 - (start/end)) * 100;
 	  this.xpos = (this.width/100) * Math.abs(this.percentage);
+	  var circleLabel = parseFloat(Math.round(this.percentage)).toFixed(2);
 	  var data = [
-				{"cx":this.xpos, "label":this.percentage}
+				{"cx":this.xpos, "label":circleLabel}
 	  ];
 	  
 	  var elem = this.svg.selectAll("g myCircleText")
@@ -123,8 +124,9 @@ export class BubbleChartComponent implements OnInit {
 		
    /* Create the text */
     elemEnter.append("text")
-        .attr("dy", function(d){return cy})
-        .text(function(d){return d.label});
+	    .attr("dx", function(d){return d.cx-25})
+        .attr("dy", function(d){return cy+5})
+        .text(function(d){return d.label + "%"});
 		
 	}
   

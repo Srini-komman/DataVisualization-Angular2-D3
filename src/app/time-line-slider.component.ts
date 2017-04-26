@@ -30,7 +30,10 @@ import { Stock } from './shared/data';
 		</div>
 		<div class="line-chart-host">
 			<cba-line-chart *ngSwitchCase="'Line Chart'" [dataStock]="dataStockFiltered"></cba-line-chart>
+			<cba-line-chart *ngSwitchDefault [dataStock]="dataStockFiltered"></cba-line-chart>
+			
 		</div>
+		
 	</div>
 	`,
   providers: [DatePipe]

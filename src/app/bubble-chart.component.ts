@@ -20,8 +20,6 @@ export class BubbleChartComponent implements OnInit {
 	private width: number;
 	private height: number;
 	private offset: number = 20;
-	private percentage: number;
-	private xpos: number;
 	private x: any;
 	private y: any;
 	private svg: any;
@@ -37,8 +35,6 @@ export class BubbleChartComponent implements OnInit {
 	}
 	public renderBubbleChart(data) {
 		this.initSvg(this.width, this.height);
-		this.initAxis();
-		this.drawAxis();
 		this.drawCircle(this.height/2, this.height/2,  Math.floor(this.height/2));
 		this.drawLines();
 	}
@@ -50,12 +46,7 @@ export class BubbleChartComponent implements OnInit {
 					 .style("width", width)
 					 .style("height", height);
 	}
-	private initAxis() {
-		this.x = d3Scale.scaleLinear().range([0, this.width]);
-		this.y = d3Scale.scaleLinear().range([this.height, 0]);
-		this.x.domain([-100, 100]);
-		this.y.domain([-100, 100]);
-	}
+	
 	private drawLines()
 	{
 		//draw the x-axis line
@@ -73,84 +64,44 @@ export class BubbleChartComponent implements OnInit {
 		.attr("x2", this.width/2)
 		.attr("y2", this.height)
 		.attr("class", "axis-line")
+		.style("stroke-dasharray", ("2, 2"))
 	}
-	private drawAxis() {
-		this.svg.append("g")
-			  .attr("class", "axis axis--x")
-			  .attr("transform", "translate(0," + this.height + ")")
-			  .call(d3Axis.axisBottom(this.x));
-			  
-		this.svg.append("g")
-			  .attr("class", "axis axis--y")
-			  .call(d3Axis.axisLeft(this.y))
-	}   
 	private drawCircle(cx, cy, radius) {
 		var start:number = this.dataStock[0].value, 
-		end:number = this.dataStock[this.dataStock.length-1].value;
-
-		this.percentage = (1 - (start/end)) * 100;
-		this.xpos = (this.width/100) * Math.abs(this.percentage);
-		var circleLabel = parseFloat(Math.round(this.percentage)).toFixed(2);
-		var data = [
-				{"cx":this.xpos, "label":circleLabel}
-		];
-		  
-		var elem = this.svg.selectAll("g myCircleText")
-						.data(data);
-		var elemEnter = elem.enter()
-						  .append("g")
-						  .attr("class", "node-group")
-						  .attr("transform", function(d) {
-									return "translate(" + 0 + ",0)"
-								});
-									
-		var rectangle = elemEnter.append('rect')
-			.attr("rx", function (d) { return d.cx; })
-			.attr("ry", function (d) { return d.cx; })
-			.attr("x", function (d) { return d.cx-40; })
+		end:number = this.dataStock[this.dataStock.length-1].value,
+		percentage:number = (1 - (start/end)) * 100,
+		circlePosition:number = percentage >= 0 ? 326 : 448;
+		
+		var circleLabel = parseFloat(Math.round(percentage)).toFixed(2);
+		var circleElements = this.svg
+							  .append("g")
+							  .attr("class", "node-group")
+							  .attr("transform", function(d) {
+										return "translate(" + circlePosition + ",0)"
+									});
+		var rectangle = circleElements.append('rect')
+			.attr("rx", cx )
+			.attr("ry", cx )
 			.attr("width", (radius*2) + 50)
 			.attr("y", 0)
 			.attr("height", cy*2)
 			.attr("class", "bubble-rectangle");
+		percentage < 0 ? rectangle.attr("x", -80) : rectangle.attr("x", cx-40)
+		
 			
 		/*Create the circle */	
-		var circle = elemEnter.append("circle")
-			.attr("cx", function (d) { return d.cx; })
+		var circle = circleElements.append("circle")
+			.attr("cx", cx)
 			.attr("cy", cy)
 			.attr("r", radius )
 			.attr("class", "circle");
 			
 		/* Create the text */
-		elemEnter.append("text")
-			.attr("dx", function(d){return d.cx-25})
-			.attr("dy", function(d){return cy+5})
-			.text(function(d){return d.label + "%"});
+		circleElements.append("text")
+			.attr("dx", cx-25)
+			.attr("dy", cy+5)
+			.text( circleLabel + "%");
 		
 	}
-	private getxPosition(d) 
-	{        
-		return d3Axis.axisBottom(this.x)
-	}
-	private drawGridLines()
-	{
-		this.svg.append("g")			
-			.attr("class", "grid")
-			.attr("transform", "translate(0," + this.height + ")")
-			.call(this.make_x_gridlines()
-				.tickSize(-this.height)
-				.tickFormat("")
-			)
-		this.svg.append("g")			
-			.attr("class", "grid")
-			.call(this.make_y_gridlines()
-				.tickSize(-this.width)
-				.tickFormat("")
-		  )
-	}
-	private make_x_gridlines() {        
-		return d3Axis.axisBottom(this.x)     
-	}
-	private make_y_gridlines() {        
-		return d3Axis.axisLeft(this.y) 
-	}
+	
 }

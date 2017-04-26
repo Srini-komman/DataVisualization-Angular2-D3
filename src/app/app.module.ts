@@ -3,6 +3,7 @@ import { NgModule } from '@angular/core';
 import {FormsModule} from '@angular/forms';
 import {TimeLineComponent} from './time-line-slider.component';
 import {LineChartComponent} from './line-chart.component';
+import {BubbleChartComponent} from './bubble-chart.component'
 
 import { AppComponent } from './app.component';
 
@@ -10,7 +11,8 @@ import { AppComponent } from './app.component';
   declarations: [
     AppComponent,
 	TimeLineComponent,
-	LineChartComponent
+	LineChartComponent,
+	BubbleChartComponent
   ],
   imports: [
     BrowserModule,

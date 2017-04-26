@@ -95,26 +95,37 @@ export class BubbleChartComponent implements OnInit {
         
   
   private drawCircle(cx, cy, radius) {
-  var start:number = this.dataStock[0].value, 
-  end:number = this.dataStock[this.dataStock.length-1].value;
-  
-  this.percentage = (1 - (start/end)) * 100;
-  this.xpos = (this.width/100) * Math.abs(this.percentage);
-  var data = [
-			{"cx":this.xpos, "label":this.percentage}
-  ];
-  
-	this.svg.append("circle")
-	    .data(data)
-		.attr("cx", function (d) { return d.cx; })
+	  var start:number = this.dataStock[0].value, 
+	  end:number = this.dataStock[this.dataStock.length-1].value;
+	  
+	  this.percentage = (1 - (start/end)) * 100;
+	  this.xpos = (this.width/100) * Math.abs(this.percentage);
+	  var data = [
+				{"cx":this.xpos, "label":this.percentage}
+	  ];
+	  
+	  var elem = this.svg.selectAll("g myCircleText")
+						.data(data);
+						
+      var elemEnter = elem.enter()
+						  .append("g")
+						  .attr("class", "node-group")
+						  .attr("transform", function(d) {
+									return "translate(" + 0 + ",0)"
+								});
+								
+      /*Create the circle */
+    var circle = elemEnter.append("circle")
+	    .attr("cx", function (d) { return d.cx; })
 	    .attr("cy", cy)
-		.attr("r", radius)
-		.attr("class", "circle")
-		.append("text")
-		.style("fill", "black")   // fill the text with the colour black
-		.attr("dy", ".35em")           // set offset y position
-		.attr("text-anchor", "middle")
-		.text(function(d){return d.label});
+        .attr("r", radius )
+		.attr("class", "circle");
+		
+   /* Create the text */
+    elemEnter.append("text")
+        .attr("dy", function(d){return cy})
+        .text(function(d){return d.label});
+		
 	}
   
   

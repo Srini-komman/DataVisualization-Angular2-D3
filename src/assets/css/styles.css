@@ -31,7 +31,56 @@
 
 .line {
   fill: none;
-  stroke: steelblue;
+  stroke: #00BFFF;
   stroke-width: 1.5px;
 }
+
+.grid .tick {
+    stroke: lightgrey;
+    opacity: 0.2;
+}
+.grid path {
+      stroke-width: 0;
+}
+
+.area {
+  fill: #e1f5fe;
+  fill-opacity:0.01px;
+}
+
+.svgBubble{
+	background: #e0e0e0;
+	margin-left:2em;
+}
+
+.axis-line{
+	stroke: #ccc;
+	stroke-width:1px;
+}
+
+.circle
+{
+	fill:red;
+	stroke:black;
+}
+
+.chartOptions
+{
+	margin-left:1.5em;
+	width:10em;
+}
+
+.chartOptionsroot
+{
+	padding-left:2em;
+}
+
+.bubble-chart-host{
+	margin-top:2em;
+}
+
+
+
+
+
 

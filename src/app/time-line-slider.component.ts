@@ -1,5 +1,7 @@
-import { Component, Input, OnInit, Injectable, ChangeDetectorRef } from '@angular/core';
+import { Component, ViewChild, Input, OnInit, Injectable, ChangeDetectorRef } from '@angular/core';
 import { DatePipe } from '@angular/common';
+import {LineChartComponent} from './line-chart.component';
+import {BubbleChartComponent} from './bubble-chart.component';
 
 import * as d3 from 'd3-selection';
 import * as d3Scale from "d3-scale";
@@ -14,22 +16,44 @@ import { Stock } from './shared/data';
   selector: 'cba-time-line-slider',
   template: `
 	<div id="controllers"></div>
-	<div class="line-chart-host">
-		<cba-line-chart [dataStock]="dataStockFiltered"></cba-line-chart>
-	</div>`,
+	<div class="chartOptionsroot">
+		<label for="chartOptions">Chart Type</label>
+		<select id="chartOptions" [(ngModel)]="selectedChart" class="chartOptions">
+			<option>Line Chart</option>
+			<option>Bubble Chart</option>
+		</select> 
+	</div>
+	
+	<div [ngSwitch]="selectedChart">
+		<div class="bubble-chart-host">
+			<cba-bubble-chart *ngSwitchCase="'Bubble Chart'" [dataStock]="dataStockFiltered"></cba-bubble-chart>
+		</div>
+		<div class="line-chart-host">
+			<cba-line-chart *ngSwitchCase="'Line Chart'" [dataStock]="dataStockFiltered"></cba-line-chart>
+		</div>
+	</div>
+	`,
   providers: [DatePipe]
 })
 
 export class TimeLineComponent implements OnInit {
   // input data
-  
-  
+ 
   @Input() dataStock : Stock[] = [];
-  public dataStockFiltered: Stock[];
+  @Input() dataStockFiltered: Stock[];
   private dateFormatter: DatePipe;
   
   constructor(public datePipe: DatePipe, private ref: ChangeDetectorRef) {
     this.dateFormatter = datePipe;
+  }
+  @ViewChild(LineChartComponent) lineChart: LineChartComponent;
+  private updateLineChart = function(dataset) {
+	this.lineChart.renderLineChart(dataset);
+  }
+  
+  @ViewChild(BubbleChartComponent) bubbleChart: BubbleChartComponent;
+  private updateBubbleChart = function(dataset) {
+	this.bubbleChart.renderBubbleChart(dataset);
   }
 
   ngOnInit() {
@@ -57,16 +81,19 @@ export class TimeLineComponent implements OnInit {
   
   private updateChart = function()
   {
-    //var self = this;
 	var callback = function(process, dstart, dend) {
-	
-      if (process === 'dragend') {          
-        this.dataStockFiltered = this.dataStock.filter(function(d) {
-		
-        return d.date >= dstart && d.date  <= dend
-      });
-      } 
+	if (process === 'dragend') {  
+		this.dataStockFiltered = this.dataStock.filter((data) => data.date >= dstart.value && data.date <= dend.value);
+		if(this.selectedChart == "Line Chart")
+		{
+			this.updateLineChart(this.dataStockFiltered);
+		}
+        if(this.selectedChart == "Bubble Chart")
+		{
+			this.updateBubbleChart(this.dataStockFiltered);
+		}
       }
+    }
 	  return callback;
     }();
    
@@ -119,7 +146,7 @@ export class TimeLineComponent implements OnInit {
 		.attr("ry", settings.radius)
 		.attr("fill", settings.color)
 		.attr("fill-opacity", settings.opacity.medium);
-      
+		      
 	  elements.minText = svg.append('text')
 		.attr("x", settings.min)
 	    .attr("y", settings.radius*3 + settings.offset)
@@ -297,15 +324,14 @@ export class TimeLineComponent implements OnInit {
       return function(x) {
         var ret = {
               x: x,
-			  text: timeScale.invert(x)
+			  value: new Date(timeScale.invert(x))
             };
         return ret;
       };
     }(timeScale);
     
-    var slider = new RangeSlider(g, settings.dim.width, handles.size, 'red', translater, callback, dateFormatter);
+    var slider = new RangeSlider(g, settings.dim.width, handles.size, 'yellow', translater, callback, dateFormatter);
     
-    console.log("slider", slider);
     
     //setup handle dragging 
     slider.elements.elmin.call(d3Drag["drag"]()

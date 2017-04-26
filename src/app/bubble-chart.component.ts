@@ -100,6 +100,7 @@ export class BubbleChartComponent implements OnInit {
 		circleElements.append("text")
 			.attr("dx", cx-25)
 			.attr("dy", cy+5)
+			.attr("class", "circle-label")
 			.text( circleLabel + "%");
 		
 	}

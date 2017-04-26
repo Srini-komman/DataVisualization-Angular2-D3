@@ -116,11 +116,27 @@ export class BubbleChartComponent implements OnInit {
 								});
 								
       /*Create the circle */
+	  
+	
+		
+	var rectangle = elemEnter.append('rect')
+	    .attr("rx", function (d) { return d.cx; })
+		.attr("ry", function (d) { return d.cx; })
+		.attr("x", function (d) { return d.cx-40; })
+		.attr("width", (radius*2) + 50)
+	    .attr("y", 0)
+		.attr("height", cy*2)
+		.attr("class", "bubble-rectangle");
+		
+		
+		
     var circle = elemEnter.append("circle")
 	    .attr("cx", function (d) { return d.cx; })
 	    .attr("cy", cy)
         .attr("r", radius )
 		.attr("class", "circle");
+		
+	
 		
    /* Create the text */
     elemEnter.append("text")
@@ -129,6 +145,8 @@ export class BubbleChartComponent implements OnInit {
         .text(function(d){return d.label + "%"});
 		
 	}
+	
+	
   
   
   

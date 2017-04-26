@@ -124,15 +124,17 @@ export class LineChartComponent implements OnInit{
 	this.svg.selectAll("dot")
      .data(data)
    .enter().append("circle")
+     .attr("class", "line-char-dot")
      .attr("r", 5)
      .attr("cx", (d: any) => this.x(d.date))
      .attr("cy", (d: any) => this.y(d.value))
+	 
   }
 
   private drawLine(data) {	
 	this.line = d3Shape.line()
-                       .x( (d: any) => this.x(d.date) )
-                       .y( (d: any) => this.y(d.value) );
+                       .x( (d: any) => this.x(d.date))
+                       .y( (d: any) => this.y(d.value));
     
     this.svg.append("path")
             .datum(data)

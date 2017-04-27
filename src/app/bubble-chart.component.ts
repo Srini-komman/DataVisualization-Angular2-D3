@@ -46,7 +46,7 @@ export class BubbleChartComponent implements OnInit {
 	public renderBubbleChart(data) {
 	    this.dataStock = data;
 		this.initSvg(this.width, this.height);
-		this.drawCircle(this.height/2, this.height/2,  Math.floor(this.height/2));
+		this.drawCircle(data, this.height/2, this.height/2,  Math.floor(this.height/2));
 		this.drawLines();
 	}
 	private initSvg(width, height) {
@@ -77,8 +77,8 @@ export class BubbleChartComponent implements OnInit {
 		.attr("class", "axis-line")
 		.style("stroke-dasharray", ("2, 2"))
 	}
-	private drawCircle(cx, cy, radius) {
-		var start:number = this.dataStock[0].value, 
+	private drawCircle(data:Stock[], cx, cy, radius) {
+		var start:number = data[0].value, 
 		end:number = this.dataStock[this.dataStock.length-1].value,
 		percentage:number = (1 - (start/end)) * 100,
 		circlePosition:number = percentage >= 0 ? 326 : 448;

@@ -16,7 +16,6 @@ import {Stock} from './shared/data';
   selector: 'cba-time-line-slider',
   template: `
 	<div id="controllers"></div>
-	
 	`,
   providers: [DatePipe]
 })

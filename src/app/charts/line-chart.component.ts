@@ -1,8 +1,11 @@
 import {Component, Input, OnInit, 
         trigger, state, style, transition, animate, keyframes} from '@angular/core';
-import {Stocks, Stock} from '../shared/data';
+import {Stock} from '../shared/data';
 import {SharedService} from '../services/shared.service';
+import {DataVisualizationService} from '../services/data-visualization.service';
 import { Subscription } from 'rxjs/Subscription';
+import { fadeInAnimation } from '../animations/index';
+import {routerTransition} from '../animations/router-Transition.animation';
 import * as d3 from 'd3-selection';
 import * as d3Scale from "d3-scale";
 import * as d3Shape from "d3-shape";
@@ -14,7 +17,15 @@ import * as d3Hierarchy from "d3-hierarchy";
   selector: 'cba-line-chart',
   template: `
 	<div id="linechart" class="line-chart">
-	</div>`
+	</div>`,
+	animations:[
+		routerTransition()
+	],
+	host: {
+     '[@routerChartTransition]': 'true',
+     '[style.display]': "'block'",
+     '[style.position]': "'absolute'"
+   }
 })
 
 export class LineChartComponent implements OnInit{
@@ -28,14 +39,17 @@ export class LineChartComponent implements OnInit{
 	private svgbubble: any;
 	private line: d3Shape.Line<[number, number]>;
 	private sharedService: SharedService;
+	private dataVisualizationService: DataVisualizationService
 	private subscription: Subscription;
 	
-	constructor(sharedService: SharedService) {
+	constructor(sharedService: SharedService, dataVisualizationService: DataVisualizationService) {
 		this.sharedService = sharedService;
 		this.width = 927 - this.margin.left - this.margin.right ;
 		this.height = 519 - this.margin.top - this.margin.bottom;
+		this.dataVisualizationService = dataVisualizationService;
 	}
 	ngOnInit() {
+	    this.dataStock = this.dataVisualizationService.getData();
 		this.renderLineChart(this.dataStock)
 		this.subscription = this.sharedService.getChartOpacity()
 								.subscribe(opacity => this.svg.attr('opacity', opacity));

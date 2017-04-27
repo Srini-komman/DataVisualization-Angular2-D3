@@ -4,29 +4,24 @@ import {DatePipe} from '@angular/common';
 import {Stocks, Stock} from './shared/data';
 import {LineChartComponent} from './charts/line-chart.component';
 import {BubbleChartComponent} from './charts/bubble-chart.component';
+import {Router} from '@angular/router';
 
 @Component({
   selector: 'app-root',
   template: `
 	<div id="content" >
 		<div class="time-line-host">
-			<cba-time-line-slider [dataStock]="dataStock" [dataStockFiltered]="dataStock" [selectedChartType]="selectedChart"></cba-time-line-slider>
+			<cba-time-line-slider></cba-time-line-slider>
 		</div>
 		<div class="chartOptionsroot">
 			<label for="chartOptions">Chart Type</label>
-			<select id="chartOptions" [(ngModel)]="selectedChart" class="chartOptions">
-				<option>Line Chart</option>
-				<option>Bubble Chart</option>
+			<select id="chartOptions" [(ngModel)]="selectedChart" (change)="redirectTo($event.target.value)" class="chartOptions">
+				<option value="/lineChart">Line Chart</option>
+				<option value="/bubbleChart">Bubble Chart</option>
 			</select> 
 		</div>
-		<div [ngSwitch]="selectedChart">
-			<div class="bubble-chart-host">
-				<cba-bubble-chart *ngSwitchCase="'Bubble Chart'" [dataStock]="dataStockFiltered"></cba-bubble-chart>
-			</div>
-			<div class="line-chart-host">
-				<cba-line-chart *ngSwitchCase="'Line Chart'" [dataStock]="dataStockFiltered"></cba-line-chart>
-				<cba-line-chart *ngSwitchDefault [dataStock]="dataStockFiltered"></cba-line-chart>
-			</div>
+		<div>
+			<router-outlet></router-outlet>
 		</div>
 	</div>`,
 	animations:[
@@ -48,7 +43,13 @@ export class AppComponent{
 	state: string = "inactive";
 	dataStock: Stock[] = Stocks;
 	dataStockFiltered: Stock[] = Stocks; 		
-	constructor(public datePipe: DatePipe) {
+	constructor(public datePipe: DatePipe, private router: Router) {
+	}
+	redirectTo(value) {
+		if (value) {
+			this.router.navigate([value]);
+		}
+		return false;
 	}
 	toggleUp(){
 		this.state = "active";

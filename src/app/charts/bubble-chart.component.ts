@@ -1,8 +1,12 @@
-import { Component, Input, OnInit,
-		 trigger, state, style, transition, animate, keyframes} from '@angular/core';
+import {Component, Input, OnInit,
+		trigger, state, style, transition, animate, keyframes} from '@angular/core';
+
 import { Stock } from '../shared/data';
 import {SharedService} from '../services/shared.service';
+import {DataVisualizationService} from '../services/data-visualization.service';
 import { Subscription } from 'rxjs/Subscription';
+import { fadeInAnimation } from '../animations/index';
+import {routerTransition} from '../animations/router-Transition.animation';
 import * as d3 from 'd3-selection';
 import * as d3Scale from "d3-scale";
 import * as d3Shape from "d3-shape";
@@ -24,8 +28,14 @@ import * as d3Drag from "d3-drag";
 			})),
 			transition('inactive => active', animate('150ms ease-in')),
 			transition('active => inactive', animate('150ms ease-out'))
-		])
-	]
+		]),
+		routerTransition()
+	],
+	host: {
+     '[@routerChartTransition]': 'true',
+     '[style.display]': "'block'",
+     '[style.position]': "'absolute'"
+   }
 })
 
 export class BubbleChartComponent implements OnInit {
@@ -42,6 +52,7 @@ export class BubbleChartComponent implements OnInit {
 	private svgbubble: any;
 	private line: d3Shape.Line<[number, number]>;
     private sharedService: SharedService;
+	private dataVisualizationService: DataVisualizationService;
 	private subscription: Subscription;
 	
 	
@@ -52,12 +63,14 @@ export class BubbleChartComponent implements OnInit {
 		this.state = "inactive";
 	}
 	
-	constructor(sharedService: SharedService) {
+	constructor(sharedService: SharedService, dataVisualizationService: DataVisualizationService) {
 		this.sharedService = sharedService;
+		this.dataVisualizationService = dataVisualizationService;
 		this.width = 900 ;
 		this.height = 120;
 	}
 	ngOnInit() {
+		this.dataStock = this.dataVisualizationService.getData();
 		this.renderBubbleChart(this.dataStock)
 		this.subscription = this.sharedService.getChartOpacity()
 								.subscribe(opacity => this.svg.attr('opacity', opacity));

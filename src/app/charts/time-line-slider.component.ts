@@ -1,5 +1,6 @@
 import {Component, ViewChild, Input, OnInit, Injectable, ChangeDetectorRef} from '@angular/core';
 import {SharedService} from '../services/shared.service';
+import {DataVisualizationService} from '../services/data-visualization.service';
 import {DatePipe } from '@angular/common';
 
 //D3 v4
@@ -26,12 +27,17 @@ export class TimeLineComponent implements OnInit {
 	@Input() selectedChartType;
 	private dateFormatter: DatePipe;
 	private sharedService: SharedService;
+	private dataVisualizationService: DataVisualizationService;
+	
 	//constructor for injecting dependencies
-	constructor(public datePipe: DatePipe, private ref: ChangeDetectorRef, sharedService: SharedService) {
+	constructor(public datePipe: DatePipe, private ref: ChangeDetectorRef, 
+				sharedService: SharedService, dataVisualizationService: DataVisualizationService) {
 		this.dateFormatter = datePipe;
 		this.sharedService = sharedService;
+		this.dataVisualizationService = dataVisualizationService;
 	}
 	ngOnInit() {
+		this.dataStock = this.dataVisualizationService.getData();
 		this.renderSlider(this.dataStock, this.settings, this.updateChart.bind(this), this.dateFormatter);
 		this.dataStockFiltered = this.dataStock;
 	}
@@ -57,12 +63,7 @@ export class TimeLineComponent implements OnInit {
 		var callback = function(process, dstart, dend) {
 			if (process === 'dragend') {  
 				this.dataStockFiltered = this.dataStock.filter((data) => data.date >= dstart.value && data.date <= dend.value);
-				if(this.selectedChartType == "Line Chart"){
-					this.sharedService.setChartData(this.dataStockFiltered)
-				}
-				if(this.selectedChartType == "Bubble Chart"){
-					this.sharedService.setChartData(this.dataStockFiltered)
-				}
+				this.sharedService.setChartData(this.dataStockFiltered);
 				this.sharedService.setChartOpacity(1);
 			}
 			else if (process === 'dragstart') {

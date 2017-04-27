@@ -4,6 +4,7 @@ import {FormsModule} from '@angular/forms';
 import {TimeLineComponent} from './time-line-slider.component';
 import {LineChartComponent} from './line-chart.component';
 import {BubbleChartComponent} from './bubble-chart.component'
+import {SharedService} from './shared/shared.service';
 
 import { AppComponent } from './app.component';
 
@@ -18,7 +19,7 @@ import { AppComponent } from './app.component';
     BrowserModule,
 	FormsModule
   ],
-  providers: [],
+  providers: [SharedService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

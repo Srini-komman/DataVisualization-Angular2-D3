@@ -1,5 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { Stock } from './shared/data';
+import {SharedService} from './shared/shared.service';
 import * as d3 from 'd3-selection';
 import * as d3Scale from "d3-scale";
 import * as d3Shape from "d3-shape";
@@ -26,12 +27,15 @@ export class BubbleChartComponent implements OnInit {
 	private svgbubble: any;
 	private line: d3Shape.Line<[number, number]>;
   
-	constructor() {
+	constructor(sharedService: SharedService) {
+		this.sharedService = sharedService;
 		this.width = 900 ;
 		this.height = 120;
 	}
 	ngOnInit() {
 		this.renderBubbleChart(this.dataStock)
+		this.subscription = this.sharedService.getSVGOpacity()
+								.subscribe(opacity => this.svg.attr('opacity', opacity));
 	}
 	public renderBubbleChart(data) {
 		this.initSvg(this.width, this.height);

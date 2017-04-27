@@ -1,5 +1,6 @@
-import { Component, Input, OnInit } from '@angular/core';
-import { Stocks, Stock } from './shared/data';
+import { Component, Input, OnInit, bind,CORE_DIRECTIVES} from '@angular/core';
+import {Stocks, Stock} from './shared/data';
+import {SharedService} from './shared/shared.service';
 import * as d3 from 'd3-selection';
 import * as d3Scale from "d3-scale";
 import * as d3Shape from "d3-shape";
@@ -24,12 +25,16 @@ export class LineChartComponent implements OnInit{
 	private svg: any;
 	private svgbubble: any;
 	private line: d3Shape.Line<[number, number]>;
-	constructor() {
+	private sharedService: SharedService;
+	constructor(sharedService: SharedService) {
+		this.sharedService = sharedService;
 		this.width = 927 - this.margin.left - this.margin.right ;
 		this.height = 519 - this.margin.top - this.margin.bottom;
 	}
 	ngOnInit() {
 		this.renderLineChart(this.dataStock)
+		this.subscription = this.sharedService.getSVGOpacity()
+								.subscribe(opacity => this.svg.attr('opacity', opacity));
 	}
 	public renderLineChart(data) {
 		this.initSvg(this.width, this.height)
@@ -40,12 +45,18 @@ export class LineChartComponent implements OnInit{
 		this.drawDots(data)
 		this.drawGridLines();
 	}
+	public setChartOpacity(opacity)
+	{
+		this.svg.attr('opacity', opacity);
+	}
 	private initSvg(width, height) {
 		d3.select('#linechart svg').remove();
 		this.svg = d3.select("#linechart")
 					 .append("svg")
-					 .style("width", 900)
-					 .style("height", 550);
+					 .style("width", this.width)
+					 .style("height", this.height)
+					 .style("opacity", 1);
+					 
 					 
 		 this.svg = d3.select('#linechart svg').append("g")
 					 .attr("transform", "translate(" + this.margin.left + "," + this.margin.top + ")");

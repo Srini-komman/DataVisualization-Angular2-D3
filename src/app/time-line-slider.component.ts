@@ -1,14 +1,18 @@
-import { Component, ViewChild, Input, OnInit, Injectable, ChangeDetectorRef } from '@angular/core';
-import { DatePipe } from '@angular/common';
+import {Component, ViewChild, Input, OnInit, Injectable, ChangeDetectorRef, bind,CORE_DIRECTIVES,
+        trigger, state, style, transition, animate, keyframes} from '@angular/core';
+import {SharedService} from './shared/shared.service';
+import {DatePipe } from '@angular/common';
 import {LineChartComponent} from './line-chart.component';
 import {BubbleChartComponent} from './bubble-chart.component';
+
+//D3 v4
 import * as d3 from 'd3-selection';
 import * as d3Scale from "d3-scale";
 import * as d3Shape from "d3-shape";
 import * as d3Array from "d3-array";
 import * as d3Axis from "d3-axis";
 import * as d3Drag from "d3-drag";
-import { Stock } from './shared/data';
+import {Stock} from './shared/data';
 
 @Component({
   selector: 'cba-time-line-slider',
@@ -39,8 +43,11 @@ export class TimeLineComponent implements OnInit {
 	@Input() dataStock : Stock[] = [];
 	@Input() dataStockFiltered: Stock[];
 	private dateFormatter: DatePipe;
-	constructor(public datePipe: DatePipe, private ref: ChangeDetectorRef) {
+	private dateFormatter: SharedService;
+	//constructor for injecting dependencies
+	constructor(public datePipe: DatePipe, private ref: ChangeDetectorRef, sharedService: SharedService) {
 		this.dateFormatter = datePipe;
+		this.sharedService = sharedService;
 	}
 	@ViewChild(LineChartComponent) lineChart: LineChartComponent;
 	private updateLineChart = function(dataset) {
@@ -74,17 +81,19 @@ export class TimeLineComponent implements OnInit {
 	private updateChart = function()
 	{
 		var callback = function(process, dstart, dend) {
-		if (process === 'dragend') {  
-			this.dataStockFiltered = this.dataStock.filter((data) => data.date >= dstart.value && data.date <= dend.value);
-			if(this.selectedChart == "Line Chart")
-			{
-				this.updateLineChart(this.dataStockFiltered);
+			if (process === 'dragend') {  
+				this.dataStockFiltered = this.dataStock.filter((data) => data.date >= dstart.value && data.date <= dend.value);
+				if(this.selectedChart == "Line Chart"){
+					this.updateLineChart(this.dataStockFiltered);
+				}
+				if(this.selectedChart == "Bubble Chart"){
+					this.updateBubbleChart(this.dataStockFiltered);
+				}
+				this.sharedService.changeChartOpacity(1);
 			}
-			if(this.selectedChart == "Bubble Chart")
-			{
-				this.updateBubbleChart(this.dataStockFiltered);
+			else if (process === 'dragstart') {
+				this.sharedService.changeChartOpacity(0.5)
 			}
-		  }
 		}
 		return callback;
 	}();

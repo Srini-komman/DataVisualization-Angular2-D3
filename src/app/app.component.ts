@@ -20,7 +20,7 @@ import {Router} from '@angular/router';
 				<option value="/bubbleChart">Bubble Chart</option>
 			</select> 
 		</div>
-		<div>
+		<div class="chartPanel">
 			<router-outlet></router-outlet>
 		</div>
 	</div>`,

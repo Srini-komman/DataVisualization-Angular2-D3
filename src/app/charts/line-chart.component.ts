@@ -4,7 +4,6 @@ import {Stock} from '../shared/data';
 import {SharedService} from '../services/shared.service';
 import {DataVisualizationService} from '../services/data-visualization.service';
 import { Subscription } from 'rxjs/Subscription';
-import { fadeInAnimation } from '../animations/index';
 import {routerTransition} from '../animations/router-Transition.animation';
 import * as d3 from 'd3-selection';
 import * as d3Scale from "d3-scale";

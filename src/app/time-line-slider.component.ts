@@ -1,4 +1,4 @@
-import {Component, ViewChild, Input, OnInit, Injectable, ChangeDetectorRef, bind,CORE_DIRECTIVES,
+import {Component, ViewChild, Input, OnInit, Injectable, ChangeDetectorRef,
         trigger, state, style, transition, animate, keyframes} from '@angular/core';
 import {SharedService} from './shared/shared.service';
 import {DatePipe } from '@angular/common';
@@ -18,22 +18,7 @@ import {Stock} from './shared/data';
   selector: 'cba-time-line-slider',
   template: `
 	<div id="controllers"></div>
-	<div class="chartOptionsroot">
-		<label for="chartOptions">Chart Type</label>
-		<select id="chartOptions" [(ngModel)]="selectedChart" class="chartOptions">
-			<option>Line Chart</option>
-			<option>Bubble Chart</option>
-		</select> 
-	</div>
-	<div [ngSwitch]="selectedChart">
-		<div class="bubble-chart-host">
-			<cba-bubble-chart *ngSwitchCase="'Bubble Chart'" [dataStock]="dataStockFiltered"></cba-bubble-chart>
-		</div>
-		<div class="line-chart-host">
-			<cba-line-chart *ngSwitchCase="'Line Chart'" [dataStock]="dataStockFiltered"></cba-line-chart>
-			<cba-line-chart *ngSwitchDefault [dataStock]="dataStockFiltered"></cba-line-chart>
-		</div>
-	</div>
+	
 	`,
   providers: [DatePipe]
 })
@@ -43,7 +28,7 @@ export class TimeLineComponent implements OnInit {
 	@Input() dataStock : Stock[] = [];
 	@Input() dataStockFiltered: Stock[];
 	private dateFormatter: DatePipe;
-	private dateFormatter: SharedService;
+	private sharedService: SharedService;
 	//constructor for injecting dependencies
 	constructor(public datePipe: DatePipe, private ref: ChangeDetectorRef, sharedService: SharedService) {
 		this.dateFormatter = datePipe;
@@ -284,7 +269,7 @@ export class TimeLineComponent implements OnInit {
 	};
 			
 	var timeScale = d3Scale.scaleTime() 
-							.domain(d3Array.extent(dataset, (d) => d.date ))
+							.domain(d3Array.extent(dataset, (d:Stock) => d.date ))
 							.range([0, settings.dim.width]);
 
 	//setup the svg container for time line slider

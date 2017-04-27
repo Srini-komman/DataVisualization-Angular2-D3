@@ -1,6 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { Stock } from './shared/data';
 import {SharedService} from './shared/shared.service';
+import { Subscription } from 'rxjs/Subscription';
 import * as d3 from 'd3-selection';
 import * as d3Scale from "d3-scale";
 import * as d3Shape from "d3-shape";
@@ -26,7 +27,9 @@ export class BubbleChartComponent implements OnInit {
 	private svg: any;
 	private svgbubble: any;
 	private line: d3Shape.Line<[number, number]>;
-  
+    private sharedService: SharedService;
+	private subscription: Subscription;
+	
 	constructor(sharedService: SharedService) {
 		this.sharedService = sharedService;
 		this.width = 900 ;
@@ -38,6 +41,7 @@ export class BubbleChartComponent implements OnInit {
 								.subscribe(opacity => this.svg.attr('opacity', opacity));
 	}
 	public renderBubbleChart(data) {
+	    this.dataStock = data;
 		this.initSvg(this.width, this.height);
 		this.drawCircle(this.height/2, this.height/2,  Math.floor(this.height/2));
 		this.drawLines();
@@ -76,7 +80,7 @@ export class BubbleChartComponent implements OnInit {
 		percentage:number = (1 - (start/end)) * 100,
 		circlePosition:number = percentage >= 0 ? 326 : 448;
 		
-		var circleLabel = parseFloat(Math.round(percentage)).toFixed(2);
+		var circleLabel = parseFloat(Math.round(percentage)).toFixed(2).toString();
 		var circleElements = this.svg
 							  .append("g")
 							  .attr("class", "node-group")

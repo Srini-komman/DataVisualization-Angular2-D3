@@ -1,6 +1,7 @@
-import { Component, Input, OnInit, bind,CORE_DIRECTIVES} from '@angular/core';
+import { Component, Input, OnInit} from '@angular/core';
 import {Stocks, Stock} from './shared/data';
 import {SharedService} from './shared/shared.service';
+import { Subscription } from 'rxjs/Subscription';
 import * as d3 from 'd3-selection';
 import * as d3Scale from "d3-scale";
 import * as d3Shape from "d3-shape";
@@ -26,6 +27,8 @@ export class LineChartComponent implements OnInit{
 	private svgbubble: any;
 	private line: d3Shape.Line<[number, number]>;
 	private sharedService: SharedService;
+	private subscription: Subscription;
+	
 	constructor(sharedService: SharedService) {
 		this.sharedService = sharedService;
 		this.width = 927 - this.margin.left - this.margin.right ;
@@ -35,8 +38,10 @@ export class LineChartComponent implements OnInit{
 		this.renderLineChart(this.dataStock)
 		this.subscription = this.sharedService.getSVGOpacity()
 								.subscribe(opacity => this.svg.attr('opacity', opacity));
+		console.log(this.subscription);
 	}
 	public renderLineChart(data) {
+	    this.dataStock = data;
 		this.initSvg(this.width, this.height)
 		this.initAxis(data);
 		this.drawPath(data);
@@ -53,8 +58,8 @@ export class LineChartComponent implements OnInit{
 		d3.select('#linechart svg').remove();
 		this.svg = d3.select("#linechart")
 					 .append("svg")
-					 .style("width", this.width)
-					 .style("height", this.height)
+					 .style("width", 900)
+					 .style("height", 550)
 					 .style("opacity", 1);
 					 
 					 
@@ -64,15 +69,14 @@ export class LineChartComponent implements OnInit{
 	private initAxis(data) {
 		this.x = d3Scale.scaleTime().range([0, this.width]);
 		this.y = d3Scale.scaleLinear().range([this.height, 0]);
-		this.x.domain(d3Array.extent(data, (d) => d.date ));
-		this.y.domain(d3Array.extent(data, (d) => d.value ));
+		this.x.domain(d3Array.extent(data, (d:Stock) => d.date ));
+		this.y.domain(d3Array.extent(data, (d:Stock) => d.value ));
 	}
 	private drawAxis() {
 		this.svg.append("g")
 			  .attr("class", "axis axis--x")
 			  .attr("transform", "translate(0," + this.height + ")")
 			  .call(d3Axis.axisBottom(this.x))
-		);
 
 		this.svg.append("g")
 			  .attr("class", "axis axis--y")
@@ -83,7 +87,6 @@ export class LineChartComponent implements OnInit{
 			  .attr("y", 6)
 			  .attr("dy", ".71em")
 			  .style("text-anchor", "end")
-		);
 	}
 	private make_x_gridlines() {        
 		return d3Axis.axisBottom(this.x)		 
@@ -98,13 +101,11 @@ export class LineChartComponent implements OnInit{
 			.attr("transform", "translate(0," + this.height + ")")
 			.call(this.make_x_gridlines()
 				.tickSize(-this.height)
-				.tickFormat("")
 			)
 		this.svg.append("g")			
 			.attr("class", "grid")
 			.call(this.make_y_gridlines()
 				.tickSize(-this.width)
-				.tickFormat("")
 			)
 	}
 	private drawPath(data) {	

@@ -1,6 +1,5 @@
-import {Component, ViewChild, Input, OnInit, Injectable, ChangeDetectorRef,
-        trigger, state, style, transition, animate, keyframes} from '@angular/core';
-import {SharedService} from './shared/shared.service';
+import {Component, ViewChild, Input, OnInit, Injectable, ChangeDetectorRef} from '@angular/core';
+import {SharedService} from '../services/shared.service';
 import {DatePipe } from '@angular/common';
 
 //D3 v4
@@ -10,7 +9,7 @@ import * as d3Shape from "d3-shape";
 import * as d3Array from "d3-array";
 import * as d3Axis from "d3-axis";
 import * as d3Drag from "d3-drag";
-import {Stock} from './shared/data';
+import {Stock} from '../shared/data';
 
 @Component({
   selector: 'cba-time-line-slider',

@@ -1,6 +1,7 @@
-import { Component, Input, OnInit} from '@angular/core';
-import {Stocks, Stock} from './shared/data';
-import {SharedService} from './shared/shared.service';
+import {Component, Input, OnInit, 
+        trigger, state, style, transition, animate, keyframes} from '@angular/core';
+import {Stocks, Stock} from '../shared/data';
+import {SharedService} from '../services/shared.service';
 import { Subscription } from 'rxjs/Subscription';
 import * as d3 from 'd3-selection';
 import * as d3Scale from "d3-scale";
@@ -41,6 +42,10 @@ export class LineChartComponent implements OnInit{
 		this.subscription = this.sharedService.getChartData()
 								.subscribe(data => this.renderLineChart(data));
 	}
+	ngOnDestroy() {
+        // unsubscribe to ensure no memory leaks
+        this.subscription.unsubscribe();
+    }
 	public renderLineChart(data) {
 	    this.dataStock = data;
 		this.initSvg(this.width, this.height)

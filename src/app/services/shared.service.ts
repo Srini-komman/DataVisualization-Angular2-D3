@@ -19,5 +19,4 @@ export class SharedService {
 	getChartData() {
 		return this.chartData;
 	}
-	
 } 

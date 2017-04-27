@@ -13,7 +13,7 @@ module.exports = {
   entry: {
     app: './main.ts',
     styles: [
-      './assets/css/styles.css'
+      './content/css/styles.css'
     ],
     vendor: [
       "core-js",

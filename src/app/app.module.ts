@@ -1,10 +1,10 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import {FormsModule} from '@angular/forms';
-import {TimeLineComponent} from './time-line-slider.component';
-import {LineChartComponent} from './line-chart.component';
-import {BubbleChartComponent} from './bubble-chart.component'
-import {SharedService} from './shared/shared.service';
+import {TimeLineComponent} from './charts/time-line-slider.component';
+import {LineChartComponent} from './charts/line-chart.component';
+import {BubbleChartComponent} from './charts/bubble-chart.component'
+import {SharedService} from './services/shared.service';
 
 import { AppComponent } from './app.component';
 

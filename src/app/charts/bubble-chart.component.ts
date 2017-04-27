@@ -1,6 +1,7 @@
-import { Component, Input, OnInit } from '@angular/core';
-import { Stock } from './shared/data';
-import {SharedService} from './shared/shared.service';
+import { Component, Input, OnInit,
+		 trigger, state, style, transition, animate, keyframes} from '@angular/core';
+import { Stock } from '../shared/data';
+import {SharedService} from '../services/shared.service';
 import { Subscription } from 'rxjs/Subscription';
 import * as d3 from 'd3-selection';
 import * as d3Scale from "d3-scale";
@@ -12,11 +13,24 @@ import * as d3Drag from "d3-drag";
 @Component({
 	selector: 'cba-bubble-chart',
 	template: `
-	<div id="bubblechart" class="bubble-chart">`,
+	<div id="bubblechart" class="bubble-chart" [@focusPanel]='state' (mouseenter)="toggleUp()" (mouseleave)="toggleDown()"></div>`,
+	animations:[
+		trigger('focusPanel', [
+			state('inactive', style({
+				transform: 'scale(1)'
+			})),
+			state('active', style({
+				transform: 'scale(1.1)'
+			})),
+			transition('inactive => active', animate('150ms ease-in')),
+			transition('active => inactive', animate('150ms ease-out'))
+		])
+	]
 })
 
 export class BubbleChartComponent implements OnInit {
 	// input data
+	state: string = "inactive";
 	@Input() dataStock : Stock[] = [];
 	private margin = {top: 20, right: 20, bottom: 30, left: 50};
 	private width: number;
@@ -29,6 +43,14 @@ export class BubbleChartComponent implements OnInit {
 	private line: d3Shape.Line<[number, number]>;
     private sharedService: SharedService;
 	private subscription: Subscription;
+	
+	
+	toggleUp(){
+		this.state = "active";
+	}
+	toggleDown(){
+		this.state = "inactive";
+	}
 	
 	constructor(sharedService: SharedService) {
 		this.sharedService = sharedService;
@@ -43,6 +65,11 @@ export class BubbleChartComponent implements OnInit {
 		this.subscription = this.sharedService.getChartData()
 								.subscribe(data => this.renderBubbleChart(data));
 	}
+	ngOnDestroy() {
+        // unsubscribe to ensure no memory leaks
+        this.subscription.unsubscribe();
+    }
+
 	public renderBubbleChart(data) {
 	    this.dataStock = data;
 		this.initSvg(this.width, this.height);

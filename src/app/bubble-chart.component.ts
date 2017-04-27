@@ -37,8 +37,11 @@ export class BubbleChartComponent implements OnInit {
 	}
 	ngOnInit() {
 		this.renderBubbleChart(this.dataStock)
-		this.subscription = this.sharedService.getSVGOpacity()
+		this.subscription = this.sharedService.getChartOpacity()
 								.subscribe(opacity => this.svg.attr('opacity', opacity));
+								
+		this.subscription = this.sharedService.getChartData()
+								.subscribe(data => this.renderBubbleChart(data));
 	}
 	public renderBubbleChart(data) {
 	    this.dataStock = data;

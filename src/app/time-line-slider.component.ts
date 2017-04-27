@@ -2,8 +2,6 @@ import {Component, ViewChild, Input, OnInit, Injectable, ChangeDetectorRef,
         trigger, state, style, transition, animate, keyframes} from '@angular/core';
 import {SharedService} from './shared/shared.service';
 import {DatePipe } from '@angular/common';
-import {LineChartComponent} from './line-chart.component';
-import {BubbleChartComponent} from './bubble-chart.component';
 
 //D3 v4
 import * as d3 from 'd3-selection';
@@ -27,20 +25,13 @@ export class TimeLineComponent implements OnInit {
 	// input data
 	@Input() dataStock : Stock[] = [];
 	@Input() dataStockFiltered: Stock[];
+	@Input() selectedChartType;
 	private dateFormatter: DatePipe;
 	private sharedService: SharedService;
 	//constructor for injecting dependencies
 	constructor(public datePipe: DatePipe, private ref: ChangeDetectorRef, sharedService: SharedService) {
 		this.dateFormatter = datePipe;
 		this.sharedService = sharedService;
-	}
-	@ViewChild(LineChartComponent) lineChart: LineChartComponent;
-	private updateLineChart = function(dataset) {
-		this.lineChart.renderLineChart(dataset);
-	}
-	@ViewChild(BubbleChartComponent) bubbleChart: BubbleChartComponent;
-	private updateBubbleChart = function(dataset) {
-		this.bubbleChart.renderBubbleChart(dataset);
 	}
 	ngOnInit() {
 		this.renderSlider(this.dataStock, this.settings, this.updateChart.bind(this), this.dateFormatter);
@@ -68,16 +59,16 @@ export class TimeLineComponent implements OnInit {
 		var callback = function(process, dstart, dend) {
 			if (process === 'dragend') {  
 				this.dataStockFiltered = this.dataStock.filter((data) => data.date >= dstart.value && data.date <= dend.value);
-				if(this.selectedChart == "Line Chart"){
-					this.updateLineChart(this.dataStockFiltered);
+				if(this.selectedChartType == "Line Chart"){
+					this.sharedService.setChartData(this.dataStockFiltered)
 				}
-				if(this.selectedChart == "Bubble Chart"){
-					this.updateBubbleChart(this.dataStockFiltered);
+				if(this.selectedChartType == "Bubble Chart"){
+					this.sharedService.setChartData(this.dataStockFiltered)
 				}
-				this.sharedService.changeChartOpacity(1);
+				this.sharedService.setChartOpacity(1);
 			}
 			else if (process === 'dragstart') {
-				this.sharedService.changeChartOpacity(0.5)
+				this.sharedService.setChartOpacity(0.5)
 			}
 		}
 		return callback;

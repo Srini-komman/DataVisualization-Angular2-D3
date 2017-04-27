@@ -8,7 +8,7 @@ import {BubbleChartComponent} from './bubble-chart.component';
   selector: 'app-root',
   template: `
 	<div class="time-line-host">
-		<cba-time-line-slider [dataStock]="dataStock" [dataStockFiltered]="dataStock"></cba-time-line-slider>
+		<cba-time-line-slider [dataStock]="dataStock" [dataStockFiltered]="dataStock" [selectedChartType]="selectedChart"></cba-time-line-slider>
 	</div>
 	<div class="chartOptionsroot">
 		<label for="chartOptions">Chart Type</label>
@@ -26,13 +26,17 @@ import {BubbleChartComponent} from './bubble-chart.component';
 			<cba-line-chart *ngSwitchDefault [dataStock]="dataStockFiltered"></cba-line-chart>
 		</div>
 	</div>`,
-  providers: [DatePipe]
+	providers: [DatePipe]
 })
+
 export class AppComponent{
-  dataStock: Stock[] = Stocks;
-  dataStockFiltered: Stock[] = Stocks;  
-  constructor(public datePipe: DatePipe) {
-  }
-  ngOnInit() {
-  }
+	dataStock: Stock[] = Stocks;
+	dataStockFiltered: Stock[] = Stocks; 		
+	constructor(public datePipe: DatePipe) {
+		
+	}
+	ngOnInit() {
+		// Settig default chart for initial page load only
+		this.selectedChart = "Bubble Chart";
+	}
 }

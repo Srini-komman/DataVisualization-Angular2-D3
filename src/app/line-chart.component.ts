@@ -36,9 +36,10 @@ export class LineChartComponent implements OnInit{
 	}
 	ngOnInit() {
 		this.renderLineChart(this.dataStock)
-		this.subscription = this.sharedService.getSVGOpacity()
+		this.subscription = this.sharedService.getChartOpacity()
 								.subscribe(opacity => this.svg.attr('opacity', opacity));
-		console.log(this.subscription);
+		this.subscription = this.sharedService.getChartData()
+								.subscribe(data => this.renderLineChart(data));
 	}
 	public renderLineChart(data) {
 	    this.dataStock = data;

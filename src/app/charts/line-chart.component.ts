@@ -43,8 +43,8 @@ export class LineChartComponent implements OnInit{
 	
 	constructor(sharedService: SharedService, dataVisualizationService: DataVisualizationService) {
 		this.sharedService = sharedService;
-		this.width = 927 - this.margin.left - this.margin.right ;
-		this.height = 519 - this.margin.top - this.margin.bottom;
+		this.width = 450; //- this.margin.left - this.margin.right ;
+		this.height = 200; //- this.margin.top - this.margin.bottom;
 		this.dataVisualizationService = dataVisualizationService;
 	}
 	ngOnInit() {

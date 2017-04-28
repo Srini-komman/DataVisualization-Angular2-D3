@@ -23,7 +23,7 @@ module.exports = {
       "@angular/platform-browser",
       "@angular/platform-browser-dynamic",
       "@angular/common",
-      "@angular/compiler",
+	  "@angular/forms",
       "rxjs",
       "d3"
     ]

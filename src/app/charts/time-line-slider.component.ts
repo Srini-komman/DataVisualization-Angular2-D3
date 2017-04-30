@@ -35,7 +35,7 @@ export class TimeLineComponent implements OnInit {
 		this.renderSlider(this.dataStock, this.settings, this.updateChart.bind(this), this.dateFormatter);
 		this.dataStockFiltered = this.dataStock;
 	}
-	// *** SETTINGS *** //
+	//Settings
 	private settings = function() {
 		var margins = {
 		  top: 10,
@@ -45,7 +45,7 @@ export class TimeLineComponent implements OnInit {
 		};
 		var dim = {
 		  width: 850,
-		  height: 20
+		  height: 50
 		};
 		return {
 		  margins: margins,
@@ -104,8 +104,7 @@ export class TimeLineComponent implements OnInit {
 							.attr("width", settings.max - (settings.offset*2))
 							.attr("y", settings.offset)
 							.attr("height", settings.radius)
-							.attr("fill", settings.color)
-							.attr("fill-opacity", settings.opacity.half);
+							.attr("fill", settings.color);
 
 			//build the handles
 			elements.elmin = svg.append('ellipse')
@@ -114,8 +113,7 @@ export class TimeLineComponent implements OnInit {
 								.attr("cy", settings.radius)
 								.attr("rx", settings.radius)
 								.attr("ry", settings.radius)
-								.attr("fill", settings.color)
-								.attr("fill-opacity", settings.opacity.medium);
+								.attr("fill", settings.color);
 				  
 			elements.minText = svg.append('text')
 								.attr("x", settings.min)
@@ -131,8 +129,7 @@ export class TimeLineComponent implements OnInit {
 								.attr("cy", settings.radius)
 								.attr("rx", settings.radius)
 								.attr("ry", settings.radius)
-								.attr("fill", settings.color)
-								.attr("fill-opacity", settings.opacity.medium);
+								.attr("fill", settings.color);
 
 			elements.maxText = svg.append('text')
 								.attr("x", settings.max)
@@ -141,6 +138,8 @@ export class TimeLineComponent implements OnInit {
 								.attr("fill-opacity", settings.opacity.medium)
 								.attr("text-anchor", "middle")
 								.text(settings.translater.apply(self,[settings.max]).text);
+								
+			
 
 			//expose as public properties
 			self.elements = elements;
@@ -183,7 +182,7 @@ export class TimeLineComponent implements OnInit {
 				resetBar(x, self.elements.max.value - x);            
 				runCallback('move');
 			}
-			return self;  //chain-able
+			return self;  
 		};
 		api.max = function(x:number) {
 			if (x >= self.elements.min.value && x <= self.settings.max) {
@@ -205,9 +204,7 @@ export class TimeLineComponent implements OnInit {
 		};      
 
 		var render:any = function(element:any, text:any) {
-			element.attr("fill-opacity", self.settings.opacity.full);
 			text.attr("fill-opacity", self.settings.full);
-			self.elements.bar.attr("fill-opacity", self.settings.opacity.light); 
 			runCallback('dragstart');
 		}
 		api.min = function() { 
@@ -227,18 +224,15 @@ export class TimeLineComponent implements OnInit {
 			max
 		};
 
-		var render:any = function($element:any, $text:any) {
-			$element.attr("fill-opacity", self.settings.opacity.medium);
-			$text.attr("fill-opacity", self.settings.medium);
-			self.elements.bar.attr("fill-opacity", self.settings.opacity.half);
+		var render:any = function() {
 			runCallback('dragend');
 		}
 		api.min = function() { 
-			render(self.elements.elmin, self.elements.minText);
+			render();
 			return self;
 		};
 		api.max = function() { 
-			render(self.elements.elmax, self.elements.maxText);
+			render();
 			return self;
 		};
 		return api;      
@@ -256,6 +250,7 @@ export class TimeLineComponent implements OnInit {
 	var timeScale:any = d3.scaleTime()
 							.domain(d3.extent(dataset, (d:Stock) => d.date ))
 							.range([0, settings.dim.width]);
+	
 
 	//setup the svg container for time line slider
 	  var svg:any = d3.select('#timelineslider')
@@ -264,18 +259,28 @@ export class TimeLineComponent implements OnInit {
 					.attr("height", 50);
 			
 	  var g:any = svg.append("g")
-					.attr("class", 'x-axis')
-					.attr("transform", 'translate(' + settings.margins.left + ',0)');     
-
-	  //draw the axis
-	  g.append('line')
-		.attr("x1", 0)
-		.attr("y1", handles.size)
-		.attr("x2", settings.dim.width)
-		.attr("y2", handles.size)
-		.style("stroke", '#ccc')
-		.style("stroke-width", 1)
-	  
+					.attr("class", "x-axis")
+					.attr("transform", "translate(" + settings.margins.left + "," + settings.margins.top + ")")
+		
+	var xaxis:any = d3.axisBottom(timeScale);
+			xaxis.tickSize(4);
+			xaxis.ticks(dataset.length);
+			xaxis.tickFormat(d3.timeFormat("%b-%Y"));
+			svg.append("g")
+				  .attr("class", "axislightgrey")
+				  .attr("transform", "translate(" + settings.margins.left +"," + 21 + ")")
+				  .call(xaxis);
+	
+	var xaxisTop:any = d3.axisTop(timeScale);
+			xaxis.tickSize(-1);
+			xaxis.ticks(dataset.length);
+			xaxis.tickFormat(d3.timeFormat("%b-%Y"));
+			var axisElements = svg.append("g")
+				  .attr("class", "axislightgrey")
+				  .attr("transform", "translate(" + settings.margins.left +"," + 15 + ")")
+				  .call(xaxisTop);
+		    axisElements.selectAll("text").remove()
+		
 	var translater:any = function(timeScale:any) {
 		return function(x:any) {
 		var ret = {

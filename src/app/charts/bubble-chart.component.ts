@@ -110,41 +110,43 @@ export class BubbleChartComponent implements OnInit {
 		.style("stroke-dasharray", ("2, 2"))
 	}
 	private drawCircle(data:Stock[], cx:number, cy:number, radius:number) {
-		var start:number = data[0].value, 
-		end:number = this.dataStock[this.dataStock.length-1].value,
-		percentage:number = (1 - (start/end)) * 100,
-		circlePosition:number = percentage >= 0 ? 326 : 448;
-		
-		var circleLabel = parseFloat(Math.round(percentage).toString()).toFixed(2);
-		var circleElements = this.svg
-							  .append("g")
-							  .attr("class", "node-group")
-							  .attr("transform", function(d:number) {
-										return "translate(" + circlePosition + ",0)"
-									});
-		var rectangle = circleElements.append('rect')
-			.attr("rx", cx )
-			.attr("ry", cx )
-			.attr("width", (radius*2) + 50)
-			.attr("y", 0)
-			.attr("height", cy*2)
-			.attr("class", "bubble-rectangle");
-		percentage < 0 ? rectangle.attr("x", -80) : rectangle.attr("x", cx-40)
-		
+		if(data)
+		{
+			var start:number = data[0].value, 
+			end:number = this.dataStock[this.dataStock.length-1].value,
+			percentage:number = (1 - (start/end)) * 100,
+			circlePosition:number = percentage >= 0 ? 326 : 448;
 			
-		/*Create the circle */	
-		var circle = circleElements.append("circle")
-			.attr("cx", cx)
-			.attr("cy", cy)
-			.attr("r", radius )
-			.attr("class", "circle");
+			var circleLabel = parseFloat(Math.round(percentage).toString()).toFixed(2);
+			var circleElements = this.svg
+								  .append("g")
+								  .attr("class", "node-group")
+								  .attr("transform", function(d:number) {
+											return "translate(" + circlePosition + ",0)"
+										});
+			var rectangle = circleElements.append('rect')
+				.attr("rx", cx )
+				.attr("ry", cx )
+				.attr("width", (radius*2) + 50)
+				.attr("y", 0)
+				.attr("height", cy*2)
+				.attr("class", "bubble-rectangle");
+			percentage < 0 ? rectangle.attr("x", -80) : rectangle.attr("x", cx-40)
 			
-		/* Create the text */
-		circleElements.append("text")
-			.attr("dx", cx-25)
-			.attr("dy", cy+5)
-			.attr("class", "circle-label")
-			.text( circleLabel + "%");
+			/*Create the circle */	
+			var circle = circleElements.append("circle")
+				.attr("cx", cx)
+				.attr("cy", cy)
+				.attr("r", radius )
+				.attr("class", "circle");
+				
+			/* Create the text */
+			circleElements.append("text")
+				.attr("dx", cx-25)
+				.attr("dy", cy+5)
+				.attr("class", "circle-label")
+				.text( circleLabel + "%");
+		}
 		
 	}
 	

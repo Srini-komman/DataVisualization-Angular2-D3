@@ -9,9 +9,7 @@ import * as d3 from 'd3';
 
 @Component({
   selector: 'cba-line-chart',
-  template: `
-	<div id="linechart" class="line-chart">
-	</div>`,
+  templateUrl: 'line-chart.component.html',
 	animations:[
 		routerTransition()
 	],
@@ -58,7 +56,7 @@ export class LineChartComponent implements OnInit{
 		this.initSvg(this.width, this.height)
 		this.initAxis(data);
 		this.drawPath(data);
-		this.drawAxis();
+		this.drawAxis(data);
 		this.drawLine(data);
 		this.drawDots(data)
 		this.drawGridLines();
@@ -84,15 +82,24 @@ export class LineChartComponent implements OnInit{
 		this.x.domain(d3.extent(data, (d:Stock) => d.date ));
 		this.y.domain(d3.extent(data, (d:Stock) => d.value ));
 	}
-	private drawAxis() {
+	private drawAxis(data: Stock[]) {
+	    var yaxis:any = d3.axisLeft(this.y);
+		var xaxis:any = d3.axisBottom(this.x);
+		xaxis.tickSize(0);
+		xaxis.ticks(data.length);
+		xaxis.tickFormat(d3.timeFormat("%m/%y"));
 		this.svg.append("g")
 			  .attr("class", "axis axis--x")
 			  .attr("transform", "translate(0," + this.height + ")")
-			  .call(d3.axisBottom(this.x))
+			  .call(xaxis);
 
+		yaxis.tickFormat(function(d:any){return "$" + d3.format("0.1s")(d)});
+		yaxis.tickSize(0);
+		yaxis.ticks(1);
+		
 		this.svg.append("g")
 			  .attr("class", "axis axis--y")
-			  .call(d3.axisLeft(this.y))
+			  .call(yaxis)
 			  .append("text")
 			  .attr("class", "axis-title")
 			  .attr("transform", "rotate(-90)")

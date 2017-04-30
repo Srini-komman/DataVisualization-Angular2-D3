@@ -10,9 +10,7 @@ import {Stock} from '../shared/data';
 
 @Component({
   selector: 'cba-time-line-slider',
-  template: `
-	<div id="controllers"></div>
-	`,
+  templateUrl: 'time-line-slider.component.html',
   providers: [DatePipe]
 })
 
@@ -260,7 +258,7 @@ export class TimeLineComponent implements OnInit {
 							.range([0, settings.dim.width]);
 
 	//setup the svg container for time line slider
-	  var svg:any = d3.select('#controllers')
+	  var svg:any = d3.select('#timelineslider')
 					.append('svg')
 					.attr("width", settings.dim.width + settings.margins.left + settings.margins.right)
 					.attr("height", 50);

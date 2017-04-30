@@ -10,8 +10,7 @@ import * as d3 from 'd3-selection';
 
 @Component({
 	selector: 'cba-bubble-chart',
-	template: `
-	<div id="bubblechart" class="bubble-chart" [@focusPanel]='state' (mouseenter)="toggleUp()" (mouseleave)="toggleDown()"></div>`,
+	templateUrl: './bubble-chart.component.html',
 	animations:[
 		trigger('focusPanel', [
 			state('inactive', style({

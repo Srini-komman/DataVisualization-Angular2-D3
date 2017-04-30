@@ -1,19 +1,20 @@
 import {Component, Injectable,Input,Output,EventEmitter} from '@angular/core';
+import { Stock } from '../shared/data';
 
 @Injectable()
 export class SharedService {
-	@Output() svgOpacity: EventEmitter<any> = new EventEmitter();
-	@Output() chartData: EventEmitter<any> = new EventEmitter();
+	@Output() svgOpacity: EventEmitter<number> = new EventEmitter();
+	@Output() chartData: EventEmitter<Stock[]> = new EventEmitter();
 	constructor() {
 		console.log('shared service started');
 	}
-	setChartOpacity(opacity) {
+	setChartOpacity(opacity:number) {
 		this.svgOpacity.emit(opacity);
 	}
 	getChartOpacity() {
 		return this.svgOpacity;
 	}
-	setChartData(data) {
+	setChartData(data:Stock[]) {
 		this.chartData.emit(data);
 	}
 	getChartData() {

@@ -5,12 +5,7 @@ import {SharedService} from '../services/shared.service';
 import {DataVisualizationService} from '../services/data-visualization.service';
 import { Subscription } from 'rxjs/Subscription';
 import {routerTransition} from '../animations/router-Transition.animation';
-import * as d3 from 'd3-selection';
-import * as d3Scale from "d3-scale";
-import * as d3Shape from "d3-shape";
-import * as d3Array from "d3-array";
-import * as d3Axis from "d3-axis";
-import * as d3Hierarchy from "d3-hierarchy";
+import * as d3 from 'd3';
 
 @Component({
   selector: 'cba-line-chart',
@@ -36,14 +31,13 @@ export class LineChartComponent implements OnInit{
 	private y: any;
 	private svg: any;
 	private svgbubble: any;
-	private line: d3Shape.Line<[number, number]>;
 	private sharedService: SharedService;
 	private dataVisualizationService: DataVisualizationService
 	private subscription: Subscription;
 	
 	constructor(sharedService: SharedService, dataVisualizationService: DataVisualizationService) {
 		this.sharedService = sharedService;
-		this.width = 450; //- this.margin.left - this.margin.right ;
+		this.width = 440; //- this.margin.left - this.margin.right ;
 		this.height = 200; //- this.margin.top - this.margin.bottom;
 		this.dataVisualizationService = dataVisualizationService;
 	}
@@ -51,15 +45,15 @@ export class LineChartComponent implements OnInit{
 	    this.dataStock = this.dataVisualizationService.getData();
 		this.renderLineChart(this.dataStock)
 		this.subscription = this.sharedService.getChartOpacity()
-								.subscribe(opacity => this.svg.attr('opacity', opacity));
+								.subscribe((opacity:any) => this.svg.attr('opacity', opacity));
 		this.subscription = this.sharedService.getChartData()
-								.subscribe(data => this.renderLineChart(data));
+								.subscribe((data:Stock[]) => this.renderLineChart(data));
 	}
 	ngOnDestroy() {
         // unsubscribe to ensure no memory leaks
         this.subscription.unsubscribe();
     }
-	public renderLineChart(data) {
+	public renderLineChart(data:any) {
 	    this.dataStock = data;
 		this.initSvg(this.width, this.height)
 		this.initAxis(data);
@@ -69,37 +63,36 @@ export class LineChartComponent implements OnInit{
 		this.drawDots(data)
 		this.drawGridLines();
 	}
-	public setChartOpacity(opacity)
+	public setChartOpacity(opacity:number)
 	{
 		this.svg.attr('opacity', opacity);
 	}
-	private initSvg(width, height) {
+	private initSvg(width:number, height:number) {
 		d3.select('#linechart svg').remove();
 		this.svg = d3.select("#linechart")
 					 .append("svg")
 					 .style("width", 900)
 					 .style("height", 550)
 					 .style("opacity", 1);
-					 
-					 
+					
 		 this.svg = d3.select('#linechart svg').append("g")
 					 .attr("transform", "translate(" + this.margin.left + "," + this.margin.top + ")");
 	}
-	private initAxis(data) {
-		this.x = d3Scale.scaleTime().range([0, this.width]);
-		this.y = d3Scale.scaleLinear().range([this.height, 0]);
-		this.x.domain(d3Array.extent(data, (d:Stock) => d.date ));
-		this.y.domain(d3Array.extent(data, (d:Stock) => d.value ));
+	private initAxis(data: Stock[]) {
+		this.x = d3.scaleTime().range([0, this.width]);
+		this.y = d3.scaleLinear().range([this.height, 0]);
+		this.x.domain(d3.extent(data, (d:Stock) => d.date ));
+		this.y.domain(d3.extent(data, (d:Stock) => d.value ));
 	}
 	private drawAxis() {
 		this.svg.append("g")
 			  .attr("class", "axis axis--x")
 			  .attr("transform", "translate(0," + this.height + ")")
-			  .call(d3Axis.axisBottom(this.x))
+			  .call(d3.axisBottom(this.x))
 
 		this.svg.append("g")
 			  .attr("class", "axis axis--y")
-			  .call(d3Axis.axisLeft(this.y))
+			  .call(d3.axisLeft(this.y))
 			  .append("text")
 			  .attr("class", "axis-title")
 			  .attr("transform", "rotate(-90)")
@@ -108,10 +101,10 @@ export class LineChartComponent implements OnInit{
 			  .style("text-anchor", "end")
 	}
 	private make_x_gridlines() {        
-		return d3Axis.axisBottom(this.x)		 
+		return d3.axisBottom(this.x)		 
 	}
 	private make_y_gridlines() {        
-		return d3Axis.axisLeft(this.y)		 
+		return d3.axisLeft(this.y)		 
 	}
 	private drawGridLines()
 	{
@@ -127,11 +120,12 @@ export class LineChartComponent implements OnInit{
 				.tickSize(-this.width)
 			)
 	}
-	private drawPath(data) {	
-		var area = d3Shape.area()
-					  .x((d: any) => this.x(d.date) )
+	
+	private drawPath(data: Stock[]) {	
+		var area = d3.area()
+					  .x( (d: any) => this.x(d.date))
 					  .y0(this.height)
-					  .y1((d: any) => this.y(d.value));
+					  .y1( (d: any) => this.y(d.value));
 						  
 		// add the area
 		this.svg.append("path")
@@ -139,23 +133,25 @@ export class LineChartComponent implements OnInit{
 		   .attr("class", "area")
 		   .attr("d", area);
 	}
-	private drawDots(data) {	
-		this.svg.selectAll("dot")
-			.data(data)
-			.enter().append("circle")
-			.attr("class", "line-char-dot")
-			.attr("r", 5)
-			.attr("cx", (d: any) => this.x(d.date))
-			.attr("cy", (d: any) => this.y(d.value))
-	}
-	private drawLine(data) {	
-		this.line = d3Shape.line()
+	private drawLine(data:any) {	
+		var line = d3.line()
 					   .x( (d: any) => this.x(d.date))
 					   .y( (d: any) => this.y(d.value));
 
 		this.svg.append("path")
 				.datum(data)
 				.attr("class", "line")
-				.attr("d", this.line);
+				.attr("d", line);
 	}
+	private drawDots(data: any) {	
+		this.svg.selectAll("dot")
+			.data(data)
+			.enter()
+			.append("circle")
+			.attr("class", "line-char-dot")
+			.attr("r", 5)
+			.attr("cx", (d: Stock) => this.x(d.date))
+			.attr("cy", (d: Stock) => this.y(d.value))
+	}
+	
 }

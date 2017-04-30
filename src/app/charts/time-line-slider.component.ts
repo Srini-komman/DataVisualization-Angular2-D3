@@ -4,12 +4,8 @@ import {DataVisualizationService} from '../services/data-visualization.service';
 import {DatePipe } from '@angular/common';
 
 //D3 v4
-import * as d3 from 'd3-selection';
-import * as d3Scale from "d3-scale";
-import * as d3Shape from "d3-shape";
-import * as d3Array from "d3-array";
-import * as d3Axis from "d3-axis";
-import * as d3Drag from "d3-drag";
+import * as d3 from "d3";
+//import * as d3Drag from "d3-drag";
 import {Stock} from '../shared/data';
 
 @Component({
@@ -24,7 +20,7 @@ export class TimeLineComponent implements OnInit {
 	// input data
 	@Input() dataStock : Stock[] = [];
 	@Input() dataStockFiltered: Stock[];
-	@Input() selectedChartType;
+	@Input() selectedChartType:string;
 	private dateFormatter: DatePipe;
 	private sharedService: SharedService;
 	private dataVisualizationService: DataVisualizationService;
@@ -60,9 +56,10 @@ export class TimeLineComponent implements OnInit {
 	}();
 	private updateChart = function()
 	{
-		var callback = function(process, dstart, dend) {
+		var callback = function(process:any, dstart:any, dend:any) {
 			if (process === 'dragend') {  
-				this.dataStockFiltered = this.dataStock.filter((data) => data.date >= dstart.value && data.date <= dend.value);
+				this.dataStockFiltered = this.dataStock.filter(function(d:Stock){
+																return d.date >= dstart.value && d.date <= dend.value});
 				this.sharedService.setChartData(this.dataStockFiltered);
 				this.sharedService.setChartOpacity(1);
 			}
@@ -74,8 +71,8 @@ export class TimeLineComponent implements OnInit {
 	}();
 
 	//Slider implementation
-	private renderSlider = function(dataset, settings, callback, dateFormatter) {
-		var RangeSlider = function(svg, width, radius, color, translater, callback, dateFormatter) {
+	private renderSlider = function(dataset:Stock[], settings:any, callback:any, dateFormatter: DatePipe) {
+		var RangeSlider:any = function(svg:any, width:number, radius:number, color:string, translater:any, callback:any, dateFormatter:DatePipe):void {
 			var self = this,
 			elements = {
 			min: { value: 0 },
@@ -158,7 +155,7 @@ export class TimeLineComponent implements OnInit {
 	RangeSlider.prototype.init = function() {
 	  var self = this,
 		  api = {};
-	  var runCallback = function(process) {
+	  var runCallback:any = function(process:any) {
 		  if (self.settings.callback) {
 			self.settings.callback.apply(self, [
 			  process,
@@ -169,18 +166,18 @@ export class TimeLineComponent implements OnInit {
 		};
 
 	  self.move = function(self) {
-		var api = {
+		var api:any = {
 			min,
 			max
 		};
 
-		var resetBar = function(x, width) {
+		var resetBar = function(x:number, width:number) {
 		  self.elements.bar
 			.attr("x", Math.max(x - self.settings.offset, 0))
 			.attr("width", Math.max(width, 0));
 		};
 		
-		api.min = function(x) {
+		api.min = function(x:number) {
 			if (x >= self.settings.min && x <= self.elements.max.value) {
 				self.elements.min.value = x;
 				self.elements.elmin.attr("cx", x);
@@ -190,7 +187,7 @@ export class TimeLineComponent implements OnInit {
 			}
 			return self;  //chain-able
 		};
-		api.max = function(x) {
+		api.max = function(x:number) {
 			if (x >= self.elements.min.value && x <= self.settings.max) {
 				self.elements.max.value = x;
 				self.elements.elmax.attr("cx", x);
@@ -203,13 +200,13 @@ export class TimeLineComponent implements OnInit {
 		return api;
 	  }(self);
 
-	  self.dragstart = function(self) {
-		var api = {
+	  self.dragstart = function(self:any) {
+		var api:any = {
 			min,
 			max
 		};      
 
-		var render = function(element, text) {
+		var render:any = function(element:any, text:any) {
 			element.attr("fill-opacity", self.settings.opacity.full);
 			text.attr("fill-opacity", self.settings.full);
 			self.elements.bar.attr("fill-opacity", self.settings.opacity.light); 
@@ -227,12 +224,12 @@ export class TimeLineComponent implements OnInit {
 	  }(self);
 
 	  self.dragend = function(self) {
-		var api = {
+		var api:any = {
 			min,
 			max
 		};
 
-		var render = function($element, $text) {
+		var render:any = function($element:any, $text:any) {
 			$element.attr("fill-opacity", self.settings.opacity.medium);
 			$text.attr("fill-opacity", self.settings.medium);
 			self.elements.bar.attr("fill-opacity", self.settings.opacity.half);
@@ -252,23 +249,23 @@ export class TimeLineComponent implements OnInit {
 	  return self;
 	};
 			
-	var min = dataset[0].date,
+	var min:any = dataset[0].date,
 		max = dataset[dataset.length-1],
 		handles = {
 		size: 8
 	};
 			
-	var timeScale = d3Scale.scaleTime() 
-							.domain(d3Array.extent(dataset, (d:Stock) => d.date ))
+	var timeScale:any = d3.scaleTime()
+							.domain(d3.extent(dataset, (d:Stock) => d.date ))
 							.range([0, settings.dim.width]);
 
 	//setup the svg container for time line slider
-	  var svg = d3.select('#controllers')
+	  var svg:any = d3.select('#controllers')
 					.append('svg')
 					.attr("width", settings.dim.width + settings.margins.left + settings.margins.right)
 					.attr("height", 50);
 			
-	  var g = svg.append("g")
+	  var g:any = svg.append("g")
 					.attr("class", 'x-axis')
 					.attr("transform", 'translate(' + settings.margins.left + ',0)');     
 
@@ -281,8 +278,8 @@ export class TimeLineComponent implements OnInit {
 		.style("stroke", '#ccc')
 		.style("stroke-width", 1)
 	  
-	var translater = function(timeScale) {
-		return function(x) {
+	var translater:any = function(timeScale:any) {
+		return function(x:any) {
 		var ret = {
 			  x: x,
 			  text: dateFormatter.transform(timeScale.invert(x), 'MMM-y') 
@@ -290,8 +287,8 @@ export class TimeLineComponent implements OnInit {
 		return ret;
 	};
 	}(timeScale);
-	var datetranslater = function(timeScale) {
-		return function(x) {
+	var datetranslater:any = function(timeScale:any) {
+		return function(x:any) {
 			var ret = {
 				  x: x,
 				  value: new Date(timeScale.invert(x))
@@ -299,16 +296,16 @@ export class TimeLineComponent implements OnInit {
 			return ret;
 		};
 	}(timeScale);
-	var slider = new RangeSlider(g, settings.dim.width, handles.size, 'yellow', translater, callback, dateFormatter);
+	var slider:any = <any>(new RangeSlider(g, settings.dim.width, handles.size, 'yellow', translater, callback, dateFormatter));
 	
 	//setup handle dragging 
-	slider.elements.elmin.call(d3Drag["drag"]()
+	slider.elements.elmin.call(d3.drag()
 		.on("start", slider.dragstart.min)
 		.on("drag", function() { 
 		   slider.move.min(d3.event.x);
 		 })
 		.on("end", slider.dragend.min));
-	slider.elements.elmax.call(d3Drag["drag"]()
+	slider.elements.elmax.call(d3.drag()
 		.on("start", slider.dragstart.max)
 		.on("drag", function() { 
 		   slider.move.max(d3.event.x);

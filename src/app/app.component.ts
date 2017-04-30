@@ -45,21 +45,21 @@ export class AppComponent{
 	dataStockFiltered: Stock[] = Stocks; 		
 	constructor(public datePipe: DatePipe, private router: Router) {
 	}
-	redirectTo(value) {
-		if (value) {
-			this.router.navigate([value]);
+	private redirectTo(url:string) {
+		if (url) {
+			this.router.navigate([url]);
 		}
 		return false;
 	}
-	toggleUp(){
+	private toggleUp(){
 		this.state = "active";
 	}
-	toggleDown(){
+	private toggleDown(){
 		this.state = "inactive";
 	}
 	
 	ngOnInit() {
 		// Settig default chart for initial page load only
-		this.selectedChart = "Bubble Chart";
+		var selectedChart: string = "Bubble Chart";
 	}
 }

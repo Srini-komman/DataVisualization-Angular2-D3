@@ -7,11 +7,6 @@ import {DataVisualizationService} from '../services/data-visualization.service';
 import { Subscription } from 'rxjs/Subscription';
 import {routerTransition} from '../animations/router-Transition.animation';
 import * as d3 from 'd3-selection';
-import * as d3Scale from "d3-scale";
-import * as d3Shape from "d3-shape";
-import * as d3Array from "d3-array";
-import * as d3Axis from "d3-axis";
-import * as d3Drag from "d3-drag";
 
 @Component({
 	selector: 'cba-bubble-chart',
@@ -49,7 +44,6 @@ export class BubbleChartComponent implements OnInit {
 	private y: any;
 	private svg: any;
 	private svgbubble: any;
-	private line: d3Shape.Line<[number, number]>;
     private sharedService: SharedService;
 	private dataVisualizationService: DataVisualizationService;
 	private subscription: Subscription;
@@ -72,23 +66,23 @@ export class BubbleChartComponent implements OnInit {
 		this.dataStock = this.dataVisualizationService.getData();
 		this.renderBubbleChart(this.dataStock)
 		this.subscription = this.sharedService.getChartOpacity()
-								.subscribe(opacity => this.svg.attr('opacity', opacity));
+								.subscribe((opacity:any) => this.svg.attr('opacity', opacity));
 								
 		this.subscription = this.sharedService.getChartData()
-								.subscribe(data => this.renderBubbleChart(data));
+								.subscribe((data:Stock[]) => this.renderBubbleChart(data));
 	}
 	ngOnDestroy() {
         // unsubscribe to ensure no memory leaks
         this.subscription.unsubscribe();
     }
 
-	public renderBubbleChart(data) {
+	public renderBubbleChart(data: Stock[]) {
 	    this.dataStock = data;
 		this.initSvg(this.width, this.height);
 		this.drawCircle(data, this.height/2, this.height/2,  Math.floor(this.height/2));
 		this.drawLines();
 	}
-	private initSvg(width, height) {
+	private initSvg(width:number, height:number) {
 		d3.select('#bubblechart svg').remove();
 		this.svg = d3.select("#bubblechart")
 					 .append("svg")
@@ -116,17 +110,17 @@ export class BubbleChartComponent implements OnInit {
 		.attr("class", "axis-line")
 		.style("stroke-dasharray", ("2, 2"))
 	}
-	private drawCircle(data:Stock[], cx, cy, radius) {
+	private drawCircle(data:Stock[], cx:number, cy:number, radius:number) {
 		var start:number = data[0].value, 
 		end:number = this.dataStock[this.dataStock.length-1].value,
 		percentage:number = (1 - (start/end)) * 100,
 		circlePosition:number = percentage >= 0 ? 326 : 448;
 		
-		var circleLabel = parseFloat(Math.round(percentage)).toFixed(2).toString();
+		var circleLabel = parseFloat(Math.round(percentage).toString()).toFixed(2);
 		var circleElements = this.svg
 							  .append("g")
 							  .attr("class", "node-group")
-							  .attr("transform", function(d) {
+							  .attr("transform", function(d:number) {
 										return "translate(" + circlePosition + ",0)"
 									});
 		var rectangle = circleElements.append('rect')

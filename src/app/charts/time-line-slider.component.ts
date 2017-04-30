@@ -40,7 +40,7 @@ export class TimeLineComponent implements OnInit {
 		var margins = {
 		  top: 10,
 		  bottom: 40,
-		  left: 40,
+		  left: 150,
 		  right: 100
 		};
 		var dim = {

@@ -8,22 +8,7 @@ import {Router} from '@angular/router';
 
 @Component({
   selector: 'app-root',
-  template: `
-	<div id="content" >
-		<div class="time-line-host">
-			<cba-time-line-slider></cba-time-line-slider>
-		</div>
-		<div class="chartOptionsroot">
-			<label for="chartOptions">Chart Type</label>
-			<select id="chartOptions" [(ngModel)]="selectedChart" (change)="redirectTo($event.target.value)" class="chartOptions">
-				<option value="/lineChart">Line Chart</option>
-				<option value="/bubbleChart">Bubble Chart</option>
-			</select> 
-		</div>
-		<div class="chartPanel">
-			<router-outlet></router-outlet>
-		</div>
-	</div>`,
+  templateUrl: './app.component.html',
 	animations:[
 		trigger('focusPanel12', [
 			state('inactive', style({
